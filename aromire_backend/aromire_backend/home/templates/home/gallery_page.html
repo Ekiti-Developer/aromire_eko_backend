@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% load wagtailimages_tags %}
+
+{% block title %}Gallery — Aromire-Éko Empowerment Foundation{% endblock %}
+
+{% block content %}
+
+<div style="padding-top:72px">
+  <section id="gallery" style="padding-top:80px">
+
+    <div class="gallery-header">
+      <p class="section-eyebrow">{{ page.eyebrow }}</p>
+      <div class="gold-divider"></div>
+      <h1 class="section-title">{{ page.heading }}</h1>
+
+      {% if page.intro %}
+        <p class="section-lead">{{ page.intro }}</p>
+      {% endif %}
+    </div>
+
+    <div class="gallery-grid">
+
+      {% for program in programs %}
+
+        <div class="gallery-card">
+
+          <div class="gallery-card-media">
+
+            {% with first_media=program.media.first %}
+
+              {% if first_media and first_media.image %}
+
+                {% image first_media.image fill-600x400 as img %}
+                <img src="{{ img.url }}" alt="{{ program.title }}">
+
+              {% elif first_media and first_media.video %}
+
+                <video controls style="width:100%; height:100%; object-fit:cover;">
+                  <source src="{{ first_media.video.url }}">
+                  Your browser does not support the video tag.
+                </video>
+
+              {% else %}
+
+                <div class="gallery-placeholder">
+                  <div class="placeholder-icon">📷</div>
+                  <p>Photos coming soon</p>
+                </div>
+
+              {% endif %}
+
+            {% endwith %}
+
+          </div>
+
+          <div class="gallery-card-body">
+            <h2 class="gallery-card-title">{{ program.title }}</h2>
+
+            {% if program.description %}
+              <p>{{ program.description }}</p>
+            {% endif %}
+          </div>
+
+        </div>
+
+      {% empty %}
+
+        <p style="color:#5a5a5a; grid-column:1/-1; text-align:center; ">
+          No gallery programs added yet. Add them through the Wagtail admin.
+        </p>
+
+      {% endfor %}
+
+    </div>
+
+  </section>
+</div>
+
+{% endblock %}

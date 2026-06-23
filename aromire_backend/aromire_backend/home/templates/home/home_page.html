@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+{% load wagtailimages_tags %}
+
+{% block title %}Home — Aromire-Éko Empowerment Foundation{% endblock %}
+
+{% block content %}
+
+<section id="home">
+  <p class="hero-eyebrow">{{ page.hero_eyebrow }}</p>
+  {% if page.hero_logo %}
+    {% image page.hero_logo original as logo %}
+    <img src="{{ logo.url }}" alt="Aromire-Éko Logo" class="hero-logo-img"/>
+  {% else %}
+    <img src="{% static 'images/Logo.svg' %}" alt="Aromire-Éko Logo" class="hero-logo-img"/>
+  {% endif %}
+  <h1 class="hero-title">{{ page.hero_title }}</h1>
+  {% if page.hero_subtitle %}
+    <p class="hero-subtitle">{{ page.hero_subtitle }}</p>
+  {% endif %}
+  <div class="hero-actions">
+    <a href="/gallery/" class="btn-primary">Our Gallery</a>
+    <a href="/contact/" class="btn-outline">Partner With Us</a>
+  </div>
+</section>
+
+{% if carousel_images %}
+<section id="carousel">
+  <div class="carousel-wrapper">
+    <div class="carousel-track" id="carouselTrack">
+      {% for item in carousel_images %}
+        {% image item.image fill-1400x600 as img %}
+        <div class="carousel-slide">
+          <img src="{{ img.url }}" alt="{{ item.caption|default:'Aromire-Éko' }}"/>
+          {% if item.caption %}
+            <div class="carousel-caption">{{ item.caption }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    <button class="carousel-btn carousel-prev" aria-label="Previous">&#8592;</button>
+    <button class="carousel-btn carousel-next" aria-label="Next">&#8594;</button>
+    <div class="carousel-dots" id="carouselDots">
+      {% for item in carousel_images %}
+        <span class="carousel-dot {% if forloop.first %}active{% endif %}"></span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if page.pillars.all %}
+<section id="pillars">
+  <div class="pillars-header">
+    <p class="section-eyebrow">What We Stand For</p>
+    <div class="gold-divider"></div>
+    <h2 class="section-title light">Our Pillars of Empowerment</h2>
+    <p class="section-lead light">Every initiative we run is grounded in one of our pillars — each one essential to a thriving, self-sustaining community.</p>
+  </div>
+  <div class="pillars-grid">
+    {% for pillar in page.pillars.all %}
+    <div class="pillar-card">
+      <div class="pillar-icon">{{ pillar.icon }}</div>
+      <h3>{{ pillar.heading }}</h3>
+      <p>{{ pillar.description }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const track  = document.getElementById('carouselTrack');
+  const dots   = document.querySelectorAll('.carousel-dot');
+  if (!track) return;
+
+  const slides = track.querySelectorAll('.carousel-slide');
+  let current  = 0;
+  let timer    = null;
+
+  function goTo(n) {
+    current = (n + slides.length) % slides.length;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  function startAuto() {
+    timer = setInterval(() => goTo(current + 1), 4000);
+  }
+
+  function stopAuto() {
+    clearInterval(timer);
+  }
+
+  // Button controls
+  document.querySelector('.carousel-prev')?.addEventListener('click', () => {
+    stopAuto(); goTo(current - 1); startAuto();
+  });
+  document.querySelector('.carousel-next')?.addEventListener('click', () => {
+    stopAuto(); goTo(current + 1); startAuto();
+  });
+
+  // Dot controls
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => { stopAuto(); goTo(i); startAuto(); });
+  });
+
+  // Pause on hover
+  track.closest('.carousel-wrapper')?.addEventListener('mouseenter', stopAuto);
+  track.closest('.carousel-wrapper')?.addEventListener('mouseleave', startAuto);
+
+  // Touch swipe support
+  let startX = 0;
+  track.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+  track.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { stopAuto(); goTo(current + (diff > 0 ? 1 : -1)); startAuto(); }
+  });
+
+  startAuto();
+})();
+</script>
+{% endblock %}

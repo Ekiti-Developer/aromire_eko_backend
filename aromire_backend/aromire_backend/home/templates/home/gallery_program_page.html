@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% load wagtailimages_tags %}
+
+{% block title %}{{ page.title }} — Aromire-Éko Empowerment Foundation{% endblock %}
+
+{% block content %}
+
+<div style="padding-top:72px">
+  <section id="program-gallery" style="padding-top:80px">
+
+    <!-- Header -->
+    <div class="gallery-header">
+      <a href="{{ page.get_parent.url }}" class="gallery-back-link">← Back to Gallery</a>
+      <div class="gold-divider" style="margin-top:1rem"></div>
+      <h1 class="section-title">{{ page.title }}</h1>
+      {% if page.description %}
+        <p class="section-lead">{{ page.description }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Full media grid -->
+    <div class="program-media-grid">
+      {% for item in page.media.all %}
+        {% if item.image %}
+          {% image item.image fill-800x600 as img %}
+          <div class="program-media-item">
+            <img src="{{ img.url }}" alt="{{ item.caption|default:page.title }}"/>
+            {% if item.caption %}<p class="media-caption">{{ item.caption }}</p>{% endif %}
+          </div>
+        {% elif item.video %}
+          <div class="program-media-item program-media-video">
+            <video src="{{ item.video.url }}" controls poster="">
+              Your browser does not support video playback.
+            </video>
+            {% if item.caption %}<p class="media-caption">{{ item.caption }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% empty %}
+        <div class="gallery-placeholder" style="aspect-ratio:16/9; border-radius:8px;">
+          <div class="placeholder-icon">📷</div>
+          <p>Photos coming soon</p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </section>
+</div>
+
+{% endblock %}

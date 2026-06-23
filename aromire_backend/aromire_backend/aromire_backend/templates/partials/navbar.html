@@ -1,0 +1,20 @@
+{% load static %}
+
+<nav>
+  <a class="nav-logo" href="/">
+    <img src="{% static 'images/Logo.svg' %}" alt="Aromire-Éko Logo" style="height:42px;"/>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="/" {% if request.path == "/" %}class="active-link"{% endif %}>Home</a></li>
+    <li><a href="/about/" {% if request.path == "/about/" %}class="active-link"{% endif %}>About</a></li>
+    <li><a href="/gallery/" {% if request.path == "/gallery/" %}class="active-link"{% endif %}>Gallery</a></li>
+    
+    
+    <li><a href="/contact/" class="nav-cta">Get Involved</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>

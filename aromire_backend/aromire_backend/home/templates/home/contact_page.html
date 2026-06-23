@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags %}
+
+{% block title %}Contact — Aromire-Éko Empowerment Foundation{% endblock %}
+
+{% block content %}
+
+<div style="padding-top:72px">
+  <section id="contact" style="padding-top:80px">
+    <div class="contact-inner">
+
+      <p class="section-eyebrow">{{ page.eyebrow }}</p>
+      <div class="gold-divider" style="margin:0 auto 1.5rem"></div>
+      <h1 class="section-title light">{{ page.heading }}</h1>
+      <p class="section-lead light" style="margin:0 auto">{{ page.intro }}</p>
+
+      {% if form_sent %}
+        <div class="thank-you-dialog">
+          <div class="thank-you-box">
+            <span class="thank-you-icon">✉️</span>
+            <div class="gold-divider"></div>
+            <h3>Message Received!</h3>
+            <p>{{ page.thank_you_text }}</p>
+            <a href="{% pageurl page %}" class="btn-primary">Close</a>
+          </div>
+        </div>
+      {% endif %}
+
+      <form class="contact-form" method="POST" action="{% pageurl page %}">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="form-error full">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        {% for field in form %}
+          {% if field.name == "message" or field.name == "interest" or field.name == "i_m_interested_in" or field.name == "marketing_consent" %}
+            <div class="form-field full">
+          {% else %}
+            <div class="form-field">
+          {% endif %}
+
+            {% if field.field.widget.input_type == "checkbox" %}
+              <label class="checkbox-label">
+                {{ field }}
+                <span>{{ field.label }}</span>
+              </label>
+            {% else %}
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+            {% endif %}
+
+            {% if field.help_text %}
+              <small class="form-help">{{ field.help_text }}</small>
+            {% endif %}
+
+            {% if field.errors %}
+              <div class="form-error">{{ field.errors }}</div>
+            {% endif %}
+
+          </div>
+        {% endfor %}
+
+        <div class="form-submit-wrap">
+          <button type="submit" class="btn-primary"
+            style="border:none;cursor:pointer;font-size:0.95rem;padding:15px 40px">
+            Send Message
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </section>
+</div>
+
+{% endblock %}

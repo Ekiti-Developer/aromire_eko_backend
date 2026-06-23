@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Us — Aromire-Éko Empowerment Foundation{% endblock %}
+
+{% block content %}
+
+<div style="padding-top:72px">
+  <section id="about" style="padding-top:80px">
+    <div class="about-grid">
+      <div class="about-image-block">
+        <div class="about-image-box">
+          <img src="{% static 'images/Logo.svg' %}" alt="Aromire-Éko Foundation"/>
+        </div>
+        <div class="about-badge">
+          <span class="badge-num">Est.</span>
+          <span class="badge-text">Aromire-Éko Foundation</span>
+        </div>
+      </div>
+      <div class="about-content">
+        <p class="section-eyebrow">Who We Are</p>
+        <div class="gold-divider"></div>
+        <h2 class="section-title">Rooted in Purpose, Driven by People</h2>
+        <p class="section-lead">Aromire-Éko Empowerment Foundation was born from a deep commitment to uplifting marginalized voices and unlocking the potential within every person and community we serve.</p>
+        <ul class="values-list">
+          <li>
+            <span class="value-icon"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-5"/></svg></span>
+            <span><strong>Our Mission:</strong> To empower youth, women, and communities through sustainable, people-centered gallery.</span>
+          </li>
+          <li>
+            <span class="value-icon"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-5"/></svg></span>
+            <span><strong>Our Vision:</strong> A world where every individual, regardless of background, has the tools to thrive.</span>
+          </li>
+          <li>
+            <span class="value-icon"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-5"/></svg></span>
+            <span><strong>Our Values:</strong> Dignity, Integrity, Inclusion, Community, and Accountability.</span>
+          </li>
+          <li>
+            <span class="value-icon"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-5"/></svg></span>
+            <span><strong>Our Approach:</strong> Grassroots partnerships, local leadership, and long-term commitment to sustainable change.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+{% endblock %}
