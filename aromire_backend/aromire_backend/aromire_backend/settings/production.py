@@ -41,6 +41,12 @@ WAGTAILADMIN_BASE_URL = os.getenv(
 
 BREVO_API_KEY = os.getenv("BREVO_API_KEY", "").strip()
 BREVO_DEFAULT_LIST_ID = os.getenv("BREVO_DEFAULT_LIST_ID", "").strip()
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # the rest...
+]
 DEBUG = False
 
 # ManifestStaticFilesStorage is recommended in production, to prevent
@@ -48,7 +54,7 @@ DEBUG = False
 # (e.g. after a Wagtail upgrade).
 # See https://docs.djangoproject.com/en/6.0/ref/contrib/staticfiles/#manifeststaticfilesstorage
 STORAGES["staticfiles"]["BACKEND"] = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
-
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 try:
     from .local import *
 except ImportError:
