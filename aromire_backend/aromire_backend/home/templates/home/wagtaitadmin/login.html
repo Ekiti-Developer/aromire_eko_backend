@@ -1,0 +1,14 @@
+{% extends "wagtailadmin/login.html" %}
+{% load static %}
+
+{% block branding_logo %}
+  <img
+    src="{% static 'images/Logo.svg' %}"
+    alt="Aromire-Éko Empowerment Foundation"
+    style="width:150px; height:auto; display:block; margin:0 auto 20px;"
+  >
+{% endblock %}
+
+{% block branding_login %}
+  Sign in to Aromire-Éko Admin
+{% endblock %}

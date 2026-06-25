@@ -13,68 +13,102 @@
       <p class="section-eyebrow">{{ page.eyebrow }}</p>
       <div class="gold-divider"></div>
       <h1 class="section-title">{{ page.heading }}</h1>
-
-      {% if page.intro %}
-        <p class="section-lead">{{ page.intro }}</p>
-      {% endif %}
+      {% if page.intro %}<p class="section-lead">{{ page.intro }}</p>{% endif %}
     </div>
 
     <div class="gallery-grid">
+      {% for prog in programs %}
+      <a href="{{ prog.url }}" class="gallery-card" style="text-decoration:none;color:inherit;display:block">
 
-      {% for program in programs %}
-
-        <div class="gallery-card">
-
-          <div class="gallery-card-media">
-
-            {% with first_media=program.media.first %}
-
-              {% if first_media and first_media.image %}
-
-                {% image first_media.image fill-600x400 as img %}
-                <img src="{{ img.url }}" alt="{{ program.title }}">
-
-              {% elif first_media and first_media.video %}
-
-                <video controls style="width:100%; height:100%; object-fit:cover;">
-                  <source src="{{ first_media.video.url }}">
-                  Your browser does not support the video tag.
-                </video>
-
-              {% else %}
-
-                <div class="gallery-placeholder">
-                  <div class="placeholder-icon">📷</div>
-                  <p>Photos coming soon</p>
-                </div>
-
-              {% endif %}
-
-            {% endwith %}
-
-          </div>
-
-          <div class="gallery-card-body">
-            <h2 class="gallery-card-title">{{ program.title }}</h2>
-
-            {% if program.description %}
-              <p>{{ program.description }}</p>
+        <div class="gallery-card-media">
+          {% with media=prog.media.all %}
+          {% if media %}
+            <div class="gallery-slideshow">
+              {% for item in media %}
+                {% if item.image %}
+                  {% image item.image width-1200 as img %}
+                  <div class="slide {% if forloop.first %}active{% endif %}">
+                    <img src="{{ img.url }}" alt="{{ item.caption|default:prog.title }}"/>
+                    {% if item.caption %}<span class="slide-caption">{{ item.caption }}</span>{% endif %}
+                  </div>
+                {% elif item.video %}
+                  <div class="slide slide-video {% if forloop.first %}active{% endif %}">
+                    <video src="{{ item.video.url }}" muted loop playsinline></video>
+                    {% if item.caption %}<span class="slide-caption">{{ item.caption }}</span>{% endif %}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            {% if media.count > 1 %}
+            <div class="slide-dots">
+              {% for item in media %}
+                <span class="dot {% if forloop.first %}active{% endif %}"></span>
+              {% endfor %}
+            </div>
             {% endif %}
-          </div>
-
+          {% else %}
+            <div class="gallery-placeholder">
+              <div class="placeholder-icon">📷</div>
+              <p>Photos coming soon</p>
+            </div>
+          {% endif %}
+          {% endwith %}
         </div>
 
+        <div class="gallery-card-body">
+          <h2 class="gallery-card-title">{{ prog.title }}</h2>
+          {% if prog.description %}
+            <p>{{ prog.description }}</p>
+          {% endif %}
+          <span class="gallery-view-btn">View Full Gallery →</span>
+        </div>
+
+      </a>
       {% empty %}
-
-        <p style="color:#5a5a5a; grid-column:1/-1; text-align:center; ">
-          No gallery programs added yet. Add them through the Wagtail admin.
+        <p style="color:#5a5a5a; grid-column:1/-1; text-align:center; padding:3rem 0;">
+          No programs added yet. Add them through the Wagtail admin.
         </p>
-
       {% endfor %}
-
     </div>
 
   </section>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.gallery-card-media').forEach(card => {
+  const slides = card.querySelectorAll('.slide');
+  const dots   = card.querySelectorAll('.dot');
+  if (slides.length <= 1) return;
+
+  let current  = 0;
+  let interval = null;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current]?.classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current]?.classList.add('active');
+    const vid = slides[current].querySelector('video');
+    if (vid) vid.play();
+  }
+
+  card.addEventListener('mouseenter', () => {
+    interval = setInterval(() => goTo(current + 1), 900);
+  });
+
+  card.addEventListener('mouseleave', () => {
+    clearInterval(interval);
+    card.querySelectorAll('video').forEach(v => v.pause());
+    slides.forEach(s => s.classList.remove('active'));
+    dots.forEach(d => d.classList.remove('active'));
+    current = 0;
+    slides[0].classList.add('active');
+    dots[0]?.classList.add('active');
+  });
+});
+</script>
 {% endblock %}

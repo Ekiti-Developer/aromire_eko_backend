@@ -14,24 +14,10 @@
       <h1 class="section-title light">{{ page.heading }}</h1>
       <p class="section-lead light" style="margin:0 auto">{{ page.intro }}</p>
 
-      {% if form_sent %}
-        <div class="thank-you-dialog">
-          <div class="thank-you-box">
-            <span class="thank-you-icon">✉️</span>
-            <div class="gold-divider"></div>
-            <h3>Message Received!</h3>
-            <p>{{ page.thank_you_text }}</p>
-            <a href="{% pageurl page %}" class="btn-primary">Close</a>
-          </div>
-        </div>
-      {% endif %}
+      <!-- No dialog needed -->
 
-      <form class="contact-form" method="POST" action="{% pageurl page %}">
+      <form class="contact-form" id="contactForm" method="POST" action="{% pageurl page %}">
         {% csrf_token %}
-
-        {% if form.non_field_errors %}
-          <div class="form-error full">{{ form.non_field_errors }}</div>
-        {% endif %}
 
         {% for field in form %}
           {% if field.name == "message" or field.name == "interest" or field.name == "i_m_interested_in" or field.name == "marketing_consent" %}
@@ -62,7 +48,7 @@
         {% endfor %}
 
         <div class="form-submit-wrap">
-          <button type="submit" class="btn-primary"
+          <button type="submit" id="submitBtn" class="btn-primary"
             style="border:none;cursor:pointer;font-size:0.95rem;padding:15px 40px">
             Send Message
           </button>
@@ -73,4 +59,71 @@
   </section>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Dialog helpers ────────────────────────────────────────────────────────────
+function showDialog(type, title, msg) {
+  alert(title + '\n\n' + msg);
+  if (type === 'success') window.location.href = window.location.pathname;
+}
+
+// ── Client-side validation ────────────────────────────────────────────────────
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  const fields  = this.querySelectorAll('input, textarea, select');
+  let   errors  = [];
+
+  fields.forEach(field => {
+    const label = field.closest('.form-field')?.querySelector('label')?.textContent?.trim() || field.name;
+    const val   = field.value.trim();
+
+    // Required check (skip checkboxes)
+    if (field.required && field.type !== 'checkbox' && !val) {
+      errors.push(`${label} is required.`);
+      field.style.borderColor = 'rgba(255,80,80,0.8)';
+    } else {
+      field.style.borderColor = '';
+    }
+
+    // Email format
+    if (field.type === 'email' && val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      errors.push('Please enter a valid email address.');
+      field.style.borderColor = 'rgba(255,80,80,0.8)';
+    }
+
+    // Phone — digits, spaces, +, dashes only
+    if (field.type === 'tel' && val && !/^[\d\s\+\-\(\)]{7,20}$/.test(val)) {
+      errors.push('Please enter a valid phone number.');
+      field.style.borderColor = 'rgba(255,80,80,0.8)';
+    }
+
+    // Min length for message
+    if ((field.name === 'message' || field.tagName === 'TEXTAREA') && val && val.length < 10) {
+      errors.push('Your message should be at least 10 characters.');
+      field.style.borderColor = 'rgba(255,80,80,0.8)';
+    }
+  });
+
+  if (errors.length) {
+    e.preventDefault();
+    showDialog('error', 'Please check your form', errors[0]);
+    return;
+  }
+
+  // Disable button to prevent double submit
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+});
+
+// ── Show success/error from server ───────────────────────────────────────────
+{% if form_sent %}
+  showDialog('success', 'Message Sent!', '{{ page.thank_you_text|escapejs }}');
+{% endif %}
+
+{% if form.errors %}
+  showDialog('error', 'Something went wrong', 'Please check the form and try again.');
+{% endif %}
+</script>
 {% endblock %}

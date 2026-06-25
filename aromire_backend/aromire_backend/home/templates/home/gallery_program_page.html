@@ -23,7 +23,7 @@
     <div class="program-media-grid">
       {% for item in page.media.all %}
         {% if item.image %}
-          {% image item.image fill-800x600 as img %}
+          {% image item.image width-1200 as img %}
           <div class="program-media-item">
             <img src="{{ img.url }}" alt="{{ item.caption|default:page.title }}"/>
             {% if item.caption %}<p class="media-caption">{{ item.caption }}</p>{% endif %}
