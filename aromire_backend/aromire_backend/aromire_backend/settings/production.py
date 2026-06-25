@@ -20,7 +20,7 @@ load_dotenv(BASE_DIR / ".env")
 
 DEBUG = False
 
-SECRET_KEY = os.getenv("SECRET_KEY", SECRET_KEY)
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = [
     "localhost",
